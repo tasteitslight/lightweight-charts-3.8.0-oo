@@ -641,6 +641,30 @@ export class PaneWidget implements IDestroyable, MouseEventHandlers {
 		this._model().setAndSaveCurrentPosition(this._correctXCoord(x), this._correctYCoord(y), ensureNotNull(this._state));
 	}
 
+  // Will OneOption add via https://github.com/tradingview/lightweight-charts/issues/438#issuecomment-716291719
+  public setCrosshair(xx: number,yy: number,visible: boolean): void {
+    if (!this._state) {
+      return;
+    }
+    if (visible){
+      const x = xx as Coordinate;
+      const y = yy as Coordinate;
+  
+      if (!Touch) {
+        this._setCrosshairPositionNoFire(x, y);
+      }
+    } else {
+      this._state.model().setHoveredSource(null);
+      if (!Touch) {
+        this._clearCrosshairPosition();
+      }
+    }
+  }
+
+  private _setCrosshairPositionNoFire(x: Coordinate, y: Coordinate): void {
+    this._model().setAndSaveCurrentPositionFire(this._correctXCoord(x), this._correctYCoord(y), false, ensureNotNull(this._state));
+  }
+
 	private _clearCrosshairPosition(): void {
 		this._model().clearCurrentPosition();
 	}

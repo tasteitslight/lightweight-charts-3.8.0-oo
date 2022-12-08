@@ -190,6 +190,11 @@ export class ChartApi implements IChartApi, DataUpdatesConsumer<SeriesType> {
 		this._timeScaleApi = new TimeScaleApi(model, this._chartWidget.timeAxisWidget());
 	}
 
+  // Will OneOption add via https://github.com/tradingview/lightweight-charts/issues/438#issuecomment-716291719
+  public setCrosshairXY(x: number,y: number,visible: boolean): void {
+    this._chartWidget.paneWidgets()[0].setCrosshair(x,y,visible);
+  }
+
 	public remove(): void {
 		this._chartWidget.clicked().unsubscribeAll(this);
 		this._chartWidget.crosshairMoved().unsubscribeAll(this);

@@ -206,6 +206,7 @@ export interface IChartApi {
 	 * ```
 	 */
 	subscribeCrosshairMove(handler: MouseEventHandler): void;
+  setCrosshairXY(x: number,y: number,visible: boolean): void; // Will OneOption add via https://github.com/tradingview/lightweight-charts/issues/438#issuecomment-716291719
 
 	/**
 	 * Unsubscribe a handler that was previously subscribed using {@link subscribeCrosshairMove}.
