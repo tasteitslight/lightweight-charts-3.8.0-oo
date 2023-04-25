@@ -311,6 +311,7 @@ export declare class ChartModel implements IDestroyable {
     endScrollTime(): void;
     serieses(): readonly Series[];
     setAndSaveCurrentPosition(x: Coordinate, y: Coordinate, pane: Pane): void;
+    setAndSaveCurrentPositionFire(x: Coordinate, y: Coordinate, fire: boolean, pane: Pane): void;
     clearCurrentPosition(): void;
     updateCrosshair(): void;
     updateTimeScale(newBaseIndex: TimePointIndex | null, newPoints?: readonly TimeScalePoint[], firstChangedPointIndex?: number): void;

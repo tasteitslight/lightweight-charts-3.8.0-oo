@@ -19,6 +19,7 @@ export declare class ChartApi implements IChartApi, DataUpdatesConsumer<SeriesTy
     private readonly _crosshairMovedDelegate;
     private readonly _timeScaleApi;
     constructor(container: HTMLElement, options?: DeepPartial<ChartOptions>);
+    setCrosshairXY(x: number, y: number, visible: boolean): void;
     remove(): void;
     resize(width: number, height: number, forceRepaint?: boolean): void;
     addAreaSeries(options?: AreaSeriesPartialOptions): ISeriesApi<'Area'>;

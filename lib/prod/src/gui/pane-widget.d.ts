@@ -86,6 +86,8 @@ export declare class PaneWidget implements IDestroyable, MouseEventHandlers {
     private _correctXCoord;
     private _correctYCoord;
     private _setCrosshairPosition;
+    setCrosshair(xx: number, yy: number, visible: boolean): void;
+    private _setCrosshairPositionNoFire;
     private _clearCrosshairPosition;
     private _tryExitTrackingMode;
     private _startTrackingMode;

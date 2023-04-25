@@ -1,6 +1,6 @@
 /*!
  * @license
- * TradingView Lightweight Charts v3.8.0-dev+202212080235
+ * TradingView Lightweight Charts v3.8.0-dev+202212082124
  * Copyright (c) 2020 TradingView, Inc.
  * Licensed under Apache License 2.0 https://www.apache.org/licenses/LICENSE-2.0
  */
@@ -7403,6 +7403,27 @@ var ChartModel = /** @class */ (function () {
         this._internal_cursorUpdate();
         this._private__crosshairMoved._internal_fire(this._private__crosshair._internal_appliedIndex(), { x: x, y: y });
     };
+    // Will OneOption add via https://github.com/tradingview/lightweight-charts/issues/438#issuecomment-716291719
+    ChartModel.prototype._internal_setAndSaveCurrentPositionFire = function (x, y, fire, pane) {
+        this._private__crosshair._internal_saveOriginCoord(x, y);
+        var price = NaN;
+        var index = this._private__timeScale._internal_coordinateToIndex(x);
+        var visibleBars = this._private__timeScale._internal_visibleStrictRange();
+        if (visibleBars !== null) {
+            index = Math.min(Math.max(visibleBars._internal_left(), index), visibleBars._internal_right());
+        }
+        var priceScale = pane._internal_defaultPriceScale();
+        var firstValue = priceScale._internal_firstValue();
+        if (firstValue !== null) {
+            price = priceScale._internal_coordinateToPrice(y, firstValue);
+        }
+        price = this._private__magnet._internal_align(price, index, pane);
+        this._private__crosshair._internal_setPosition(index, price, pane);
+        this._internal_cursorUpdate();
+        if (fire) {
+            this._private__crosshairMoved._internal_fire(this._private__crosshair._internal_appliedIndex(), { x: x, y: y });
+        }
+    };
     ChartModel.prototype._internal_clearCurrentPosition = function () {
         var crosshair = this._internal_crosshairSource();
         crosshair._internal_clearPosition();
@@ -9562,6 +9583,24 @@ var PaneWidget = /** @class */ (function () {
     };
     PaneWidget.prototype._private__setCrosshairPosition = function (x, y) {
         this._private__model()._internal_setAndSaveCurrentPosition(this._private__correctXCoord(x), this._private__correctYCoord(y), ensureNotNull(this._private__state));
+    };
+    // Will OneOption add via https://github.com/tradingview/lightweight-charts/issues/438#issuecomment-716291719
+    PaneWidget.prototype._internal_setCrosshair = function (xx, yy, visible) {
+        if (!this._private__state) {
+            return;
+        }
+        if (visible) {
+            var x = xx;
+            var y = yy;
+            this._private__setCrosshairPositionNoFire(x, y);
+        }
+        else {
+            this._private__state._internal_model()._internal_setHoveredSource(null);
+            this._private__clearCrosshairPosition();
+        }
+    };
+    PaneWidget.prototype._private__setCrosshairPositionNoFire = function (x, y) {
+        this._private__model()._internal_setAndSaveCurrentPositionFire(this._private__correctXCoord(x), this._private__correctYCoord(y), false, ensureNotNull(this._private__state));
     };
     PaneWidget.prototype._private__clearCrosshairPosition = function () {
         this._private__model()._internal_clearCurrentPosition();
@@ -11914,6 +11953,10 @@ var ChartApi = /** @class */ (function () {
         var model = this._private__chartWidget._internal_model();
         this._private__timeScaleApi = new TimeScaleApi(model, this._private__chartWidget._internal_timeAxisWidget());
     }
+    // Will OneOption add via https://github.com/tradingview/lightweight-charts/issues/438#issuecomment-716291719
+    ChartApi.prototype.setCrosshairXY = function (x, y, visible) {
+        this._private__chartWidget._internal_paneWidgets()[0]._internal_setCrosshair(x, y, visible);
+    };
     ChartApi.prototype.remove = function () {
         this._private__chartWidget._internal_clicked()._internal_unsubscribeAll(this);
         this._private__chartWidget._internal_crosshairMoved()._internal_unsubscribeAll(this);
@@ -12094,7 +12137,7 @@ function createChart(container, options) {
  * Returns the current version as a string. For example `'3.3.0'`.
  */
 function version() {
-    return "3.8.0-dev+202212080235";
+    return "3.8.0-dev+202212082124";
 }
 
 export { ColorType, CrosshairMode, LastPriceAnimationMode as LasPriceAnimationMode, LastPriceAnimationMode, LineStyle, LineType, PriceLineSource, PriceScaleMode, TickMarkType, TrackingModeExitMode, createChart, isBusinessDay, isUTCTimestamp, version };
